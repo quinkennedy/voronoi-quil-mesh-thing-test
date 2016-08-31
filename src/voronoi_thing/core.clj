@@ -1,22 +1,23 @@
-(ns voronoi-thing.core
+(ns voronoi_thing.core
   (:require [quil.core :as q]
             [quil.middleware :as m]
-            [voronoi-thing.dynamic :as dynamic]))
+            [voronoi_thing.dynamic :as dynamic]))
 
 (defn setup []
   ; Set frame rate to 30 frames per second.
   (q/frame-rate 30)
-  ; Set color mode to HSB (HSV) instead of default RGB.
-  (q/color-mode :hsb)
   ; setup function returns initial state. It contains
   ; circle color and position.
   {:color 0
    :angle 0
    :points []})
 
+(def dpi 138)
+(def inch_size [3 4])
+
 (q/defsketch voronoi-thing
   :title "You spin my circle right round"
-  :size [500 500]
+  :size (map #(* dpi %) inch_size)
   ; setup function called only once, during sketch initialization.
   :setup setup
   ; update-state is called on each iteration before draw-state.
