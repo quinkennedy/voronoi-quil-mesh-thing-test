@@ -6,18 +6,15 @@
 (defn setup []
   ; Set frame rate to 30 frames per second.
   (q/frame-rate 30)
-  ; setup function returns initial state. It contains
-  ; circle color and position.
-  {:color 0
-   :angle 0
-   :points (dynamic/get-rand-radial-points 50)
+  ; setup function returns initial state.  
+  {:points (dynamic/get-rand-radial-points 50)
    :frame 0})
 
 (def dpi 138)
 (def inch_size [3 4])
 
 (q/defsketch voronoi-thing
-  :title "You spin my circle right round"
+  :title "Voronoi + thi.ng test"
   :size (map #(* dpi %) inch_size)
   ; setup function called only once, during sketch initialization.
   :setup setup

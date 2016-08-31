@@ -1,7 +1,8 @@
 (ns voronoi_thing.dynamic
   (:import  [megamu.mesh Voronoi])
   (:require [quil.core :as q]
-            [quil.middleware :as m]))
+            [quil.middleware :as m]
+            [thi.ng.geom.core :as g]))
 
 (defn voronoi [points] 
   (Voronoi. (into-array (map float-array points))))
@@ -97,16 +98,3 @@
       (when (= (:frame state) 1)
         (save-pics state)))
     (q/text "click anywhere" 100 100)))
-  ;; Clear the sketch by filling it with light-grey color.
-  ;(q/background 240)
-  ;; Set circle color.
-  ;(q/fill (:color state) 255 255)
-  ;; Calculate x and y coordinates of the circle.
-  ;(let [angle (:angle state)
-  ;      x (* 150 (q/cos angle))
-  ;      y (* 150 (q/sin angle))]
-  ;  ; Move origin point to the center of the sketch.
-  ;  (q/with-translation [(/ (q/width) 2)
-  ;                       (/ (q/height) 2)]
-  ;    ; Draw the circle.
-  ;    (q/ellipse x y 100 100))))
