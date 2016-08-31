@@ -10,7 +10,8 @@
   ; circle color and position.
   {:color 0
    :angle 0
-   :points []})
+   :points (dynamic/get-rand-radial-points 50)
+   :frame 0})
 
 (def dpi 138)
 (def inch_size [3 4])

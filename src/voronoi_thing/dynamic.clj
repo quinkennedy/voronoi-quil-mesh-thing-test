@@ -7,11 +7,8 @@
   (Voronoi. (into-array (map float-array points))))
 
 (defn update-state [state]
-  state)
-;  ; Update sketch state by changing circle color and position.
-;  (merge {:color (mod (+ (:color state) 0.7) 255)
-;          :angle (+ (:angle state) 0.1)}
-;         {:voronoi (voronoi (mapv vector (range 10) (range 1 11)))}))
+  (merge state
+         {:frame (inc (:frame state))}))
 
 (def colors [[255 93 48]
              [1 163 160]
@@ -61,6 +58,10 @@
          (println "r")
          (merge state
                 {:points (get-rand-radial-points 50)}))
+    :s (do
+         (println "s")
+         (merge state
+                {:frame 0}))
     state))
 
 (defn mouse-clicked [state event]
@@ -69,6 +70,17 @@
     (merge state
            {:points points
             :voronoi (voronoi points)})))
+
+(defn get-timestamp []
+  (format "%05d_%02d_%02d_%02d_%02d_%02d_%03d"
+          (q/year) (q/month) (q/day) 
+          (q/hour) (q/minute) (q/seconds)
+          (mod (System/currentTimeMillis) 1000)))
+
+(defn save-pics [state]
+  (let [timestamp (get-timestamp)]
+    (q/save (format "output/%s_render" 
+                    timestamp))))
 
 (defn draw-state [state]
   (q/color-mode :rgb)
@@ -81,7 +93,9 @@
           (do
             (apply q/fill (conj (nth colors (mod i (count colors))) 255))
             (apply q/stroke (conj (nth colors (mod i (count colors))) 255))
-            (.draw (nth regions i) (quil.applet/current-applet))))))
+            (.draw (nth regions i) (quil.applet/current-applet)))))
+      (when (= (:frame state) 1)
+        (save-pics state)))
     (q/text "click anywhere" 100 100)))
   ;; Clear the sketch by filling it with light-grey color.
   ;(q/background 240)
