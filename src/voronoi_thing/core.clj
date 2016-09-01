@@ -7,7 +7,7 @@
   ; Set frame rate to 30 frames per second.
   (q/frame-rate 30)
   ; setup function returns initial state.  
-  {:points (dynamic/get-rand-radial-points 50)
+  {:points (dynamic/get-rand-radial-points 25)
    :frame 0})
 
 (def dpi 138)
