@@ -118,16 +118,24 @@
           voronoi (voronoi extra-points)
           regions (.getRegions voronoi)
     ; migrate voronoi MPolygon to thi.ng Polygon2
-          polygons (map #(gp/polygon2 (.getCoords %)) regions)
+          polygons (map (fn [region]
+                          (gp/polygon2 
+                            (mapv vec (.getCoords region)))) regions)
           ]
     ; render thi.ng Polygon2 shapes
       (doall
-        (for [i (range (count regions))]
+        (for [i (range (count polygons))]
           (do
             (apply q/fill (conj (nth colors (mod i (count colors))) 200))
             (apply q/stroke (conj (nth colors (mod i (count colors))) 200))
             (q/stroke-weight 0)
-            (.draw (nth regions i) (quil.applet/current-applet))
+            (let [polygon (nth polygons i)]
+              (q/begin-shape)
+              (doall
+                (for [point (:points polygon)]
+                  (apply q/vertex point)))
+              (q/end-shape))
+            ;(.draw (nth regions i) (quil.applet/current-applet))
             ;(q/stroke 0)
             ;(q/stroke-weight 5)
             ;(apply q/point (nth extra-points i))
