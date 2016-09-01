@@ -5,7 +5,8 @@
             [thi.ng.math.core :as mc]
             [thi.ng.geom.core :as gc]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.geom.polygon :as gp]))
+            [thi.ng.geom.polygon :as gp]
+            [thi.ng.geom.types :as gt]))
 
 (defn voronoi [points] 
   (Voronoi. (into-array (map float-array points))))
@@ -108,9 +109,24 @@
     (q/save (format "output/%s_render" 
                     timestamp))))
 
+(defn region-to-polygon [region center]
+  (let [all-points (mapv vec (.getCoords region))
+        cross (mc/cross 
+                (gv/vec2 
+                  (map - 
+                       (first all-points) 
+                       center)) 
+                (gv/vec2 
+                  (map -
+                       (second all-points)
+                       center)))
+        cw-points (if (> cross 0) (reverse all-points) all-points)]
+    (gp/polygon2 cw-points)))
+
 (defn draw-state [state]
   (q/color-mode :rgb)
-  (q/background 0)
+  ;(q/color-mode :hsb)
+  (q/background 255)
   (if (not (zero? (count (:points state))))
     ; mirror all the points
     (let [extra-points (concat (:points state) (rotate-points (:points state)))
@@ -118,18 +134,22 @@
           voronoi (voronoi extra-points)
           regions (.getRegions voronoi)
     ; migrate voronoi MPolygon to thi.ng Polygon2
-          polygons (map (fn [region]
-                          (gp/polygon2 
-                            (mapv vec (.getCoords region)))) regions)
+          polygons (map region-to-polygon regions extra-points)
           ]
     ; render thi.ng Polygon2 shapes
       (doall
         (for [i (range (count polygons))]
           (do
             (apply q/fill (conj (nth colors (mod i (count colors))) 200))
+            ;(q/fill (* (/ (second (nth extra-points i)) (q/height)) 255) 255 255 200)
             (apply q/stroke (conj (nth colors (mod i (count colors))) 200))
-            (q/stroke-weight 0)
-            (let [polygon (nth polygons i)]
+            ;(q/stroke-weight 0)
+            (q/no-stroke)
+            (let [polygon (gp/polygon2 
+                            (thi.ng.geom.polygon/inset-polygon 
+                              (:points (nth polygons i)) 
+                              ;-5))]
+                              (* (- (/ (second (nth extra-points i)) (q/height)) 0.5) 20)))]
               (q/begin-shape)
               (doall
                 (for [point (:points polygon)]
